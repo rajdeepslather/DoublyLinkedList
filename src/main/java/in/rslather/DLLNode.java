@@ -2,6 +2,11 @@ package in.rslather;
 
 import java.io.Serializable;
 
+/**
+ * @author RAJDEEP
+ *
+ * @param <A>
+ */
 public class DLLNode<A> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
