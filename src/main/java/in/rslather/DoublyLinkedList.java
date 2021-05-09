@@ -1,11 +1,13 @@
 package in.rslather;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.lang.reflect.Array;
+import java.util.Set;
 
 public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 	private static final long serialVersionUID = 1L;
@@ -20,16 +22,29 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 		length = 0;
 	}
 
+	/**
+	 * Move node from anywhere in this object to the first position.
+	 * 
+	 * @param node
+	 */
 	public void moveToFirst(DLLNode<A> node) {
 		removeNode(node);
 		addFirst(node);
 	}
 
+	/**
+	 * Move node from anywhere in this object to the last position.
+	 * 
+	 * @param node
+	 */
 	public void moveToLast(DLLNode<A> node) {
 		removeNode(node);
 		addLast(node);
 	}
 
+	/**
+	 * @param node node to be removed
+	 */
 	public void removeNode(DLLNode<A> node) {
 		DLLNode<A> prev = node.prev;
 		DLLNode<A> next = node.next;
@@ -40,14 +55,24 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 		length--;
 	}
 
-	public void replaceNode(DLLNode<A> node, DLLNode<A> newNode) {
-		newNode.next = node.next;
-		newNode.prev = node.prev;
+	/**
+	 * @param oldNode node in the linked list to be replaced
+	 * @param newNode replacement node
+	 */
+	public void replaceNode(DLLNode<A> oldNode, DLLNode<A> newNode) {
+		newNode.next = oldNode.next;
+		newNode.prev = oldNode.prev;
 
-		node.prev.next = newNode;
-		node.next.prev = newNode;
+		oldNode.prev.next = newNode;
+		oldNode.next.prev = newNode;
 	}
 
+	/**
+	 * Insert a node to the right of a given node.
+	 * 
+	 * @param leftNode node in the linked list
+	 * @param newNode  node to be inserted to the right of the leftNode
+	 */
 	public void insertRight(DLLNode<A> leftNode, DLLNode<A> newNode) {
 		DLLNode<A> next = leftNode.next;
 
@@ -60,6 +85,12 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 		length++;
 	}
 
+	/**
+	 * Insert a node to the left of a given node.
+	 * 
+	 * @param newNode   node to be inserted to the left of the rightNode
+	 * @param rightNode node in the linked list
+	 */
 	public void insertLeft(DLLNode<A> newNode, DLLNode<A> rightNode) { insertRight(rightNode.prev, newNode); }
 
 	DLLNode<A> ifNullExcept(DLLNode<A> node) {
@@ -98,10 +129,18 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		for (Object object : c)
-			if (!contains(object))
-				return false;
-		return true;
+		if (c.size() <= 0)
+			return true;
+
+		if (c.size() > size())
+			return false;
+
+		Set<Object> set = new HashSet<>(c); // making a shallow copy
+
+		for (DLLNode<A> node : this)
+			set.remove(node);
+
+		return set.size() == 0;
 	}
 
 	@Override
@@ -117,8 +156,12 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		int oldSize = size();
-		for (Object object : c)
-			removeFirstOccurrence(object);
+
+		for (Iterator<DLLNode<A>> iterator = this.iterator(); iterator.hasNext();) {
+			DLLNode<A> node = iterator.next();
+			if (c.contains(node))
+				iterator.remove();
+		}
 
 		return oldSize < size();
 	}
@@ -253,26 +296,26 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 	public int size() { return length; }
 
 	@Override
-	public Iterator<DLLNode<A>> iterator() { return iterator(peekFirst()); }
+	public Iterator<DLLNode<A>> iterator() { return iterator(head); }
 
 	@Override
-	public Iterator<DLLNode<A>> descendingIterator() { return descendingIterator(peekLast()); }
+	public Iterator<DLLNode<A>> descendingIterator() { return descendingIterator(tail); }
 
 	public Iterator<DLLNode<A>> iterator(DLLNode<A> node) {
 		return new Iterator<DLLNode<A>>() {
-			DLLNode<A> current = node;
-			DLLNode<A> old = null;
+			DLLNode<A> next = node.next;
+			DLLNode<A> old = node;
 
 			@Override
-			public boolean hasNext() { return current != tail; }
+			public boolean hasNext() { return next != tail; }
 
 			@Override
 			public DLLNode<A> next() {
 				if (!hasNext())
 					throw new NoSuchElementException();
 
-				old = current;
-				current = current.next;
+				old = next;
+				next = next.next;
 				return old;
 			}
 
@@ -288,19 +331,19 @@ public class DoublyLinkedList<A> implements Serializable, Deque<DLLNode<A>> {
 
 	public Iterator<DLLNode<A>> descendingIterator(DLLNode<A> node) {
 		return new Iterator<DLLNode<A>>() {
-			DLLNode<A> current = node;
-			DLLNode<A> old = null;
+			DLLNode<A> prev = node.prev;
+			DLLNode<A> old = node;
 
 			@Override
-			public boolean hasNext() { return current != head; }
+			public boolean hasNext() { return prev != head; }
 
 			@Override
 			public DLLNode<A> next() {
 				if (!hasNext())
 					throw new NoSuchElementException();
 
-				old = current;
-				current = current.prev;
+				old = prev;
+				prev = prev.prev;
 				return old;
 			}
 
