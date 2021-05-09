@@ -40,6 +40,28 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 		length--;
 	}
 
+	public void replaceNode(Node<A> node, Node<A> newNode) {
+		newNode.next = node.next;
+		newNode.prev = node.prev;
+
+		node.prev.next = newNode;
+		node.next.prev = newNode;
+	}
+
+	public void insertRight(Node<A> leftNode, Node<A> newNode) {
+		Node<A> next = leftNode.next;
+
+		newNode.next = next;
+		newNode.prev = leftNode;
+
+		next.prev = newNode;
+		leftNode.next = newNode;
+
+		length++;
+	}
+
+	public void insertLeft(Node<A> newNode, Node<A> rightNode) { insertRight(rightNode.prev, newNode); }
+
 	Node<A> ifNullExcept(Node<A> node) {
 		if (node == null)
 			throw new NoSuchElementException();
@@ -47,12 +69,12 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 	}
 
 	@Override
-	public boolean isEmpty() { return length <= 0; }
+	public boolean isEmpty() { return size() <= 0; }
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object[] toArray() {
-		Node<A>[] nodes = new Node[length];
+		Node<A>[] nodes = new Node[size()];
 
 		int i = 0;
 		for (Node<A> node : this)
@@ -64,7 +86,7 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T[] toArray(T[] a) {
-		T[] arr = (T[]) Array.newInstance(a.getClass(), length);
+		T[] arr = (T[]) Array.newInstance(a.getClass(), size());
 		int i = 0;
 
 		// TODO how to ensure type safety below?
@@ -84,31 +106,31 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 
 	@Override
 	public boolean addAll(Collection<? extends Node<A>> c) {
-		int oldLength = length;
+		int oldSize = size();
 
-		for (Node<A> node : c) {
+		for (Node<A> node : c)
 			addFirst(node);
-		}
-		return oldLength > length;
+
+		return oldSize > size();
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		int oldLength = length;
-		for (Object object : c) {
+		int oldSize = size();
+		for (Object object : c)
 			removeFirstOccurrence(object);
-		}
-		return oldLength < length;
+
+		return oldSize < size();
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		int oldLength = length;
-		for (Node<A> node : this) {
+		int oldSize = size();
+		for (Node<A> node : this)
 			if (!c.contains(node))
 				removeNode(node);
-		}
-		return oldLength < length;
+
+		return oldSize < size();
 	}
 
 	@Override
@@ -119,30 +141,10 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 	}
 
 	@Override
-	public void addFirst(Node<A> node) {
-		Node<A> secondNode = peekFirst();
-
-		node.next = secondNode;
-		node.prev = head;
-
-		secondNode.prev = node;
-		head.next = node;
-
-		length++;
-	}
+	public void addFirst(Node<A> node) { insertRight(head, node); }
 
 	@Override
-	public void addLast(Node<A> node) {
-		Node<A> secondLastNode = peekLast();
-
-		node.next = tail;
-		node.prev = secondLastNode;
-
-		secondLastNode.next = node;
-		tail.prev = node;
-
-		length++;
-	}
+	public void addLast(Node<A> node) { insertLeft(node, tail); }
 
 	@Override
 	public boolean offerFirst(Node<A> node) {
@@ -164,7 +166,7 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 
 	@Override
 	public Node<A> pollFirst() {
-		if (length <= 0)
+		if (size() <= 0)
 			return null;
 
 		Node<A> first = peekFirst();
@@ -174,7 +176,7 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 
 	@Override
 	public Node<A> pollLast() {
-		if (length <= 0)
+		if (size() <= 0)
 			return null;
 
 		Node<A> last = peekLast();
@@ -196,12 +198,12 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 
 	@Override
 	public boolean removeFirstOccurrence(Object o) {
-		for (Node<A> node : this) {
+		for (Node<A> node : this)
 			if (node == o) {
 				removeNode(node);
 				return true;
 			}
-		}
+
 		return false;
 	}
 
@@ -316,9 +318,9 @@ public class DoublyLinkedList<A> implements Serializable, Deque<Node<A>> {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder("DoublyLinkedList [");
 
-		for (Node<A> node : this) {
+		for (Node<A> node : this)
 			stringBuilder.append(node).append(", ");
-		}
+
 		stringBuilder.append("]");
 
 		return stringBuilder.toString();
