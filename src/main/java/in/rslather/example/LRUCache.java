@@ -48,6 +48,8 @@ public class LRUCache<K, V> {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("\nTesting LRUCache\n");
+
 		LRUCache<Integer, String> obj = new LRUCache<>(10);
 		System.out.println("1: " + obj.get(1));
 
@@ -83,6 +85,8 @@ public class LRUCache<K, V> {
 
 		System.out.println("First item: " + obj.peek());
 
+		System.out.println("\nTesting DoublyLinkedList\n");
+
 		for (ListIterator<DLLNode<Pair<Integer, String>>> itr = obj.deList.listIterator(); itr.hasNext();) {
 			itr.next();
 			if (itr.nextIndex() == obj.deList.size()) {
@@ -97,9 +101,24 @@ public class LRUCache<K, V> {
 
 		System.out.println(obj.deList.get(8));
 
+		System.out.println("\nTesting ArrayListDeque\n");
+
 		ArrayListDeque<DLLNode<Pair<Integer, String>>> arr = new ArrayListDeque<>(new ArrayList<>(obj.deList));
 		System.out.println(arr);
-		System.out.println(arr.peekFirst());
+
+		System.out.println(obj.deList.subList(0, 2));
 		System.out.println(arr.subList(0, 2));
+
+		for (ListIterator<DLLNode<Pair<Integer, String>>> iterator = arr.listIterator(); iterator.hasNext();) {
+			DLLNode<Pair<Integer, String>> dllNode = iterator.next();
+			System.out.println(iterator.previousIndex() + " : " + dllNode + " : " + iterator.nextIndex());
+		}
+
+		System.out.println("-------------");
+
+		for (ListIterator<DLLNode<Pair<Integer, String>>> iterator = arr.listIterator(arr.size()); iterator.hasPrevious();) {
+			DLLNode<Pair<Integer, String>> dllNode = iterator.previous();
+			System.out.println(iterator.previousIndex() + " : " + dllNode + " : " + iterator.nextIndex());
+		}
 	}
 }

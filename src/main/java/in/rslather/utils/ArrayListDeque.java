@@ -1,7 +1,7 @@
 package in.rslather.utils;
 
 import java.io.Serializable;
-import java.util.AbstractCollection;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 
 /**
  * A Dequeue backed by an array.</br>
@@ -20,33 +21,45 @@ import java.util.NoSuchElementException;
  * 
  * @author RAJDEEP
  */
-public class ArrayListDeque<E> extends AbstractCollection<E> implements List<E>, Deque<E>, Serializable {
+public class ArrayListDeque<E> extends AbstractList<E>
+		implements List<E>, Deque<E>, RandomAccess, Serializable {
 	private static final long serialVersionUID = 1L;
 	final ArrayList<E> array; // reversed from the Deque
 
-	public ArrayListDeque() { array = new ArrayList<>(); }
+	public ArrayListDeque() {
+		super();
+		array = new ArrayList<>();
+	}
 
-	public ArrayListDeque(int initSize) { array = new ArrayList<>(initSize); }
+	public ArrayListDeque(int initSize) {
+		super();
+		array = new ArrayList<>(initSize);
+	}
 
 	public ArrayListDeque(Collection<? extends E> c) {
+		super();
 		array = new ArrayList<>(c);
 		Collections.reverse(array);
 	}
 
-	// protected because it does not reverse array
-	protected ArrayListDeque(ArrayList<E> array) { this.array = array; }
-
-	public E get(int i) { return array.get(toArrayI(i)); }
-
-	public E set(int i, E e) { return array.set(toArrayI(i), e); }
-
-	public E remove(int i) { return array.remove(toArrayI(i)); }
+	// protected because it does not reverse the array
+	protected ArrayListDeque(ArrayList<E> array) {
+		super();
+		this.array = array;
+	}
 
 	protected E ifNullExcept(E e) {
 		if (e == null)
 			throw new NoSuchElementException();
 		return e;
 	}
+
+	int lastI() { return array.size() - 1; }
+
+	int toArrayI(int i) { return array.size() - 1 - i; }
+
+	@Override
+	public int size() { return array.size(); }
 
 	@Override
 	public void addFirst(E e) { array.add(e); }
@@ -162,56 +175,30 @@ public class ArrayListDeque<E> extends AbstractCollection<E> implements List<E>,
 	public boolean contains(Object o) { return array.contains(o); }
 
 	@Override
-	public int size() { return array.size(); }
-
-	int lastI() { return array.size() - 1; }
-
-	int toArrayI(int i) { return array.size() - 1 - i; }
+	public E get(int i) { return array.get(toArrayI(i)); }
 
 	@Override
-	public Iterator<E> iterator() { return listIterator(0); }
-
-	@Override
-	public Iterator<E> descendingIterator() { return array.iterator(); }
-
-	@Override
-	public Object[] toArray() { return array.toArray(); }
-
-	@Override
-	public <T> T[] toArray(T[] a) { return array.toArray(a); }
-
-	@Override
-	public boolean containsAll(Collection<?> c) { return array.containsAll(c); }
-
-	@Override
-	public boolean addAll(Collection<? extends E> c) { return array.addAll(c); }
-
-	@Override
-	public boolean removeAll(Collection<?> c) { return array.removeAll(c); }
-
-	@Override
-	public boolean retainAll(Collection<?> c) { return array.retainAll(c); }
-
-	@Override
-	public void clear() { array.clear(); }
-
-	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
-		Collections.reverse(array);
-		boolean isChanged = array.addAll(c);
-		Collections.reverse(array);
-
-		return isChanged;
-	}
+	public E set(int i, E e) { return array.set(toArrayI(i), e); }
 
 	@Override
 	public void add(int index, E element) { array.add(toArrayI(index), element); }
+
+	@Override
+	public E remove(int i) { return array.remove(toArrayI(i)); }
 
 	@Override
 	public int indexOf(Object o) { return toArrayI(array.lastIndexOf(o)); }
 
 	@Override
 	public int lastIndexOf(Object o) { return toArrayI(array.indexOf(o)); }
+
+	// iterators
+
+	@Override
+	public Iterator<E> iterator() { return listIterator(0); }
+
+	@Override
+	public Iterator<E> descendingIterator() { return array.iterator(); }
 
 	@Override
 	public ListIterator<E> listIterator() { return listIterator(0); }
@@ -230,24 +217,50 @@ public class ArrayListDeque<E> extends AbstractCollection<E> implements List<E>,
 
 			public E previous() { return itr.next(); }
 
-			public int nextIndex() { return itr.previousIndex(); }
+			public int nextIndex() { return toArrayI(itr.previousIndex()); }
 
-			public int previousIndex() { return itr.nextIndex(); }
+			public int previousIndex() { return toArrayI(itr.nextIndex()); }
 
 			public void remove() { itr.remove(); }
 
 			public void set(E e) { itr.set(e); }
 
-			public void add(E e) { // TODO Auto-generated method stub
+			public void add(E e) {
+				// FIXME: The add method is probably out of spec
+				itr.add(e);
 			}
 		};
 	}
 
+	// Bulk methods
+
 	@Override
-	// 1, size() -1 >-sub-> 0, size() -2 >-toArrayI-> size() -1, 1 >-flip-> 1, size() -1
-	// 0, size() -1 >-sub-> -1, size() -2 >-toArrayI-> size(), 1 >-flip-> 1, size()
-	// 0, size() >-sub-> -1, size() -1 >-toArrayI-> size(), 0 >-flip-> 0, size()
-	public List<E> subList(int fromIndex, int toIndex) {
-		return new ArrayListDeque<>(new ArrayList<>(array.subList(array.size() - toIndex, array.size() - fromIndex)));
+	public Object[] toArray() { return array.toArray(); }
+
+	@Override
+	public <T> T[] toArray(T[] a) { return array.toArray(a); }
+
+	@Override
+	public boolean containsAll(Collection<?> c) { return array.containsAll(c); }
+
+	@Override
+	public boolean addAll(Collection<? extends E> c) { return addAll(0, c); }
+
+	@Override
+	public boolean removeAll(Collection<?> c) { return array.removeAll(c); }
+
+	@Override
+	public boolean retainAll(Collection<?> c) { return array.retainAll(c); }
+
+	@Override
+	public void clear() { array.clear(); }
+
+	@Override
+	public boolean addAll(int index, Collection<? extends E> c) {
+		Collections.reverse(array);
+		boolean isChanged = array.addAll(c);
+		Collections.reverse(array);
+
+		return isChanged;
 	}
 }
