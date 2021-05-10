@@ -5,26 +5,26 @@ import java.io.Serializable;
 /**
  * @author RAJDEEP
  *
- * @param <A>
+ * @param <E>
  */
-public class DLLNode<A> implements Serializable {
+public class DLLNode<E> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	A item;
-	DLLNode<A> prev = null;
-	DLLNode<A> next = null;
+	E element;
+	DLLNode<E> prev = null;
+	DLLNode<E> next = null;
 
-	public DLLNode(A item) { this.item = item; }
+	public DLLNode(E item) { this.element = item; }
 
-	public DLLNode() { this.item = null; }
+	public DLLNode() { this.element = null; }
 
-	public DLLNode<A> getNext() { return next; }
+	public DLLNode<E> getNext() { return next; }
 
-	public DLLNode<A> getPrev() { return prev; }
+	public DLLNode<E> getPrev() { return prev; }
 
-	public A getItem() { return item; }
+	public E getItem() { return element; }
 
-	public void setItem(A item) { this.item = item; }
+	public void setItem(E item) { this.element = item; }
 
-	public String toString() { return "Node [" + item + "]"; }
+	public String toString() { return "Node: " + element; }
 }

@@ -76,6 +76,8 @@ public class LRUCache<K, V> {
 		System.out.println(obj.deList);
 		obj.get(5);
 		System.out.println(obj.deList);
+		obj.put(7, "item_l");
+		System.out.println(obj.deList);
 
 		System.out.println("First item: " + obj.peek());
 

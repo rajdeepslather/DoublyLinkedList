@@ -14,6 +14,6 @@ public class Pair<A, B> implements Serializable {
 	}
 
 	@Override
-	public String toString() { return "Pair [a=" + a + ", b=" + b + "]"; }
+	public String toString() { return "Pair {a=" + a + ", b=" + b + "}"; }
 
 }
