@@ -26,12 +26,6 @@ public class Bag<E> extends AbstractCollection<E> implements Serializable {
 
 	public E get(int i) { return array.get(i); }
 
-	/**
-	 * @return A list which is a shallow copy of the Bag, the list operations will not effect the bag in any way.
-	 */
-	@SuppressWarnings("unchecked")
-	public ArrayList<E> getClonedList() { return (ArrayList<E>) array.clone(); }
-
 	public E set(int i, E e) { return array.set(i, e); }
 
 	public E remove(int i) {
@@ -89,4 +83,10 @@ public class Bag<E> extends AbstractCollection<E> implements Serializable {
 
 	@Override
 	public void clear() { array.clear(); }
+
+	/**
+	 * @return A list which is a shallow copy of the Bag, the list operations will not effect the bag in any way.
+	 */
+	@SuppressWarnings("unchecked")
+	public ArrayList<E> getClonedList() { return (ArrayList<E>) array.clone(); }
 }

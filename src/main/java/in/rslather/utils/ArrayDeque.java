@@ -1,6 +1,7 @@
 package in.rslather.utils;
 
 import java.io.Serializable;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -9,14 +10,15 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * A Deque backed by an array.</br>
+ * A Dequeue backed by an array.</br>
+ * The biggest benefit of this Dequeue is the O(1) get and set operations. </br>
  * Optimized for stack operations and not queue operations (add (addLast) is O(n) while push (addFirst) is O(1)).
  *
  * @param <E>
  * 
  * @author RAJDEEP
  */
-public class ArrayDeque<E> implements Deque<E>, Serializable {
+public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Serializable {
 	private static final long serialVersionUID = 1L;
 	ArrayList<E> array; // reversed from the Deque
 
@@ -25,6 +27,12 @@ public class ArrayDeque<E> implements Deque<E>, Serializable {
 	public ArrayDeque(int initSize) { array = new ArrayList<>(initSize); }
 
 	public ArrayDeque(Collection<? extends E> c) { array = new ArrayList<>(c); }
+
+	public E get(int i) { return array.get(size() - 1 - i); }
+
+	public E set(int i, E e) { return array.set(size() - 1 - i, e); }
+
+	public E remove(int i) { return array.remove(size() - 1 - i); }
 
 	protected E ifNullExcept(E e) {
 		if (e == null)
@@ -166,9 +174,6 @@ public class ArrayDeque<E> implements Deque<E>, Serializable {
 	public Iterator<E> descendingIterator() { return array.iterator(); }
 
 	@Override
-	public boolean isEmpty() { return array.isEmpty(); }
-
-	@Override
 	public Object[] toArray() { return array.toArray(); }
 
 	@Override
@@ -188,5 +193,4 @@ public class ArrayDeque<E> implements Deque<E>, Serializable {
 
 	@Override
 	public void clear() { array.clear(); }
-
 }
