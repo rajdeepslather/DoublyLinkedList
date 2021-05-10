@@ -5,10 +5,6 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 
 /**
- * A Dequeue backed by an array.</br>
- * The biggest benefit of this Dequeue is the O(1) get and set operations. </br>
- * Optimized for stack operations and not queue operations (add (addLast) is O(n) while push (addFirst) is O(1)).
- *
  * @param <E>
  * 
  * @author RAJDEEP
