@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -26,13 +27,16 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 
 	public ArrayDeque(int initSize) { array = new ArrayList<>(initSize); }
 
-	public ArrayDeque(Collection<? extends E> c) { array = new ArrayList<>(c); }
+	public ArrayDeque(Collection<? extends E> c) {
+		array = new ArrayList<>(c);
+		Collections.reverse(array);
+	}
 
-	public E get(int i) { return array.get(size() - 1 - i); }
+	public E get(int i) { return array.get(lastI() - i); }
 
-	public E set(int i, E e) { return array.set(size() - 1 - i, e); }
+	public E set(int i, E e) { return array.set(lastI() - i, e); }
 
-	public E remove(int i) { return array.remove(size() - 1 - i); }
+	public E remove(int i) { return array.remove(lastI() - i); }
 
 	protected E ifNullExcept(E e) {
 		if (e == null)
@@ -68,7 +72,7 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 	public E pollFirst() {
 		if (isEmpty())
 			return null;
-		return array.remove(size() - 1);
+		return array.remove(lastI());
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 	public E peekFirst() {
 		if (isEmpty())
 			return null;
-		return array.get(size() - 1);
+		return array.get(lastI());
 	}
 
 	@Override
@@ -102,13 +106,13 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 	public boolean removeFirstOccurrence(Object o) {
 		// remove last occurrence in the array
 		if (o == null) {
-			for (int i = size() - 1; i >= 0; i--)
+			for (int i = lastI(); i >= 0; i--)
 				if (array.get(i) == null) {
 					array.remove(i);
 					return true;
 				}
 		} else {
-			for (int i = size() - 1; i >= 0; i--)
+			for (int i = lastI(); i >= 0; i--)
 				if (o.equals(array.get(i))) {
 					array.remove(i);
 					return true;
@@ -156,11 +160,13 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 	@Override
 	public int size() { return array.size(); }
 
+	public int lastI() { return array.size() - 1; }
+
 	@Override
 	public Iterator<E> iterator() {
 		// reverse of array iterator
 		return new Iterator<E>() {
-			ListIterator<E> itr = array.listIterator(size() - 1);
+			ListIterator<E> itr = array.listIterator(lastI());
 
 			public boolean hasNext() { return itr.hasPrevious(); }
 
