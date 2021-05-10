@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -16,9 +15,8 @@ import java.util.Set;
  *
  * @param <A>
  */
-public class DoublyLinkedList<A>
-		extends AbstractSequentialList<DLLNode<A>>
-		implements List<DLLNode<A>>, Deque<DLLNode<A>>, Serializable {
+public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
+		implements Deque<DLLNode<A>>, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final DLLNode<A> head = new DLLNode<>();
@@ -125,7 +123,7 @@ public class DoublyLinkedList<A>
 		int i = size() - 1;
 		for (Iterator<DLLNode<A>> revItr = descendingIterator(); revItr.hasNext();) {
 			DLLNode<A> node = revItr.next();
-			if (index == i++)
+			if (index == i--)
 				return node;
 		}
 		return null;

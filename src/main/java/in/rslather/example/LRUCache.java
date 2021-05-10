@@ -45,7 +45,7 @@ public class LRUCache<K, V> {
 	}
 
 	public static void main(String[] args) {
-		LRUCache<Integer, String> obj = new LRUCache<>(2);
+		LRUCache<Integer, String> obj = new LRUCache<>(10);
 		System.out.println("1: " + obj.get(1));
 
 		obj.put(1, "item_a");
@@ -59,7 +59,25 @@ public class LRUCache<K, V> {
 		System.out.println(obj.deList);
 		obj.put(3, "item_d");
 		System.out.println(obj.deList);
-
+		obj.put(4, "item_e");
+		System.out.println(obj.deList);
+		obj.put(5, "item_f");
+		System.out.println(obj.deList);
+		obj.put(6, "item_g");
+		System.out.println(obj.deList);
+		obj.put(7, "item_h");
+		System.out.println(obj.deList);
+		obj.put(8, "item_i");
+		System.out.println(obj.deList);
+		obj.put(9, "item_j");
+		System.out.println(obj.deList);
+		obj.put(10, "item_k");
+		System.out.println(obj.deList);
+		obj.get(5);
+		System.out.println(obj.deList);
+		
+		System.out.println(obj.deList.get(5));
+		
 		System.out.println("First item: " + obj.peek());
 	}
 }
