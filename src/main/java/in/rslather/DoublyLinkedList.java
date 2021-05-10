@@ -117,7 +117,6 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 		int i = size() - 1;
 		for (Iterator<DLLNode<A>> revItr = descendingIterator(); revItr.hasNext();) {
 			DLLNode<A> node = revItr.next();
-			System.out.println(i);
 			if (index == i--)
 				return node;
 		}
@@ -131,12 +130,12 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	}
 
 	@Override
+	// overriding because of optimization
 	protected void removeRange(int fromIndex, int toIndex) {
-		// overriding because of optimization
 		DLLNode<A> left = get(fromIndex); // inclusive
 		DLLNode<A> right = (toIndex == size()) ? tail : get(toIndex); // exclusive
 
-		length -= toIndex - fromIndex; // removeRange(0, size());
+		length -= toIndex - fromIndex;
 
 		left.prev.next = right;
 		right.prev = left.prev;
@@ -178,7 +177,6 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	public DLLNode<A> pollFirst() {
 		if (isEmpty())
 			return null;
-
 		return removeNode(peekFirst());
 	}
 
@@ -186,7 +184,6 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	public DLLNode<A> pollLast() {
 		if (isEmpty())
 			return null;
-
 		return removeNode(peekLast());
 	}
 
