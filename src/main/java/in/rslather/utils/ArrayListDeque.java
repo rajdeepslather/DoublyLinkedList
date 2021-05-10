@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -19,24 +20,27 @@ import java.util.NoSuchElementException;
  * 
  * @author RAJDEEP
  */
-public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Serializable {
+public class ArrayListDeque<E> extends AbstractCollection<E> implements List<E>, Deque<E>, Serializable {
 	private static final long serialVersionUID = 1L;
-	ArrayList<E> array; // reversed from the Deque
+	final ArrayList<E> array; // reversed from the Deque
 
-	public ArrayDeque() { array = new ArrayList<>(); }
+	public ArrayListDeque() { array = new ArrayList<>(); }
 
-	public ArrayDeque(int initSize) { array = new ArrayList<>(initSize); }
+	public ArrayListDeque(int initSize) { array = new ArrayList<>(initSize); }
 
-	public ArrayDeque(Collection<? extends E> c) {
+	public ArrayListDeque(Collection<? extends E> c) {
 		array = new ArrayList<>(c);
 		Collections.reverse(array);
 	}
 
-	public E get(int i) { return array.get(lastI() - i); }
+	// protected because it does not reverse array
+	protected ArrayListDeque(ArrayList<E> array) { this.array = array; }
 
-	public E set(int i, E e) { return array.set(lastI() - i, e); }
+	public E get(int i) { return array.get(toArrayI(i)); }
 
-	public E remove(int i) { return array.remove(lastI() - i); }
+	public E set(int i, E e) { return array.set(toArrayI(i), e); }
+
+	public E remove(int i) { return array.remove(toArrayI(i)); }
 
 	protected E ifNullExcept(E e) {
 		if (e == null)
@@ -160,21 +164,12 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 	@Override
 	public int size() { return array.size(); }
 
-	public int lastI() { return array.size() - 1; }
+	int lastI() { return array.size() - 1; }
+
+	int toArrayI(int i) { return array.size() - 1 - i; }
 
 	@Override
-	public Iterator<E> iterator() {
-		// reverse of array iterator
-		return new Iterator<E>() {
-			ListIterator<E> itr = array.listIterator(lastI());
-
-			public boolean hasNext() { return itr.hasPrevious(); }
-
-			public E next() { return itr.previous(); }
-
-			public void remove() { itr.remove(); }
-		};
-	}
+	public Iterator<E> iterator() { return listIterator(0); }
 
 	@Override
 	public Iterator<E> descendingIterator() { return array.iterator(); }
@@ -199,4 +194,60 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Se
 
 	@Override
 	public void clear() { array.clear(); }
+
+	@Override
+	public boolean addAll(int index, Collection<? extends E> c) {
+		Collections.reverse(array);
+		boolean isChanged = array.addAll(c);
+		Collections.reverse(array);
+
+		return isChanged;
+	}
+
+	@Override
+	public void add(int index, E element) { array.add(toArrayI(index), element); }
+
+	@Override
+	public int indexOf(Object o) { return toArrayI(array.lastIndexOf(o)); }
+
+	@Override
+	public int lastIndexOf(Object o) { return toArrayI(array.indexOf(o)); }
+
+	@Override
+	public ListIterator<E> listIterator() { return listIterator(0); }
+
+	@Override
+	public ListIterator<E> listIterator(int index) {
+		// reverse of array iterator
+		return new ListIterator<E>() {
+			ListIterator<E> itr = array.listIterator(array.size() - index);
+
+			public boolean hasNext() { return itr.hasPrevious(); }
+
+			public E next() { return itr.previous(); }
+
+			public boolean hasPrevious() { return itr.hasNext(); }
+
+			public E previous() { return itr.next(); }
+
+			public int nextIndex() { return itr.previousIndex(); }
+
+			public int previousIndex() { return itr.nextIndex(); }
+
+			public void remove() { itr.remove(); }
+
+			public void set(E e) { itr.set(e); }
+
+			public void add(E e) { // TODO Auto-generated method stub
+			}
+		};
+	}
+
+	@Override
+	// 1, size() -1 >-sub-> 0, size() -2 >-toArrayI-> size() -1, 1 >-flip-> 1, size() -1
+	// 0, size() -1 >-sub-> -1, size() -2 >-toArrayI-> size(), 1 >-flip-> 1, size()
+	// 0, size() >-sub-> -1, size() -1 >-toArrayI-> size(), 0 >-flip-> 0, size()
+	public List<E> subList(int fromIndex, int toIndex) {
+		return new ArrayListDeque<>(new ArrayList<>(array.subList(array.size() - toIndex, array.size() - fromIndex)));
+	}
 }

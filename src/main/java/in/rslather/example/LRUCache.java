@@ -1,10 +1,12 @@
 package in.rslather.example;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
 import in.rslather.DoublyLinkedList;
+import in.rslather.utils.ArrayListDeque;
 import in.rslather.DLLNode;
 
 public class LRUCache<K, V> {
@@ -94,5 +96,10 @@ public class LRUCache<K, V> {
 		System.out.println(obj.deList);
 
 		System.out.println(obj.deList.get(8));
+
+		ArrayListDeque<DLLNode<Pair<Integer, String>>> arr = new ArrayListDeque<>(new ArrayList<>(obj.deList));
+		System.out.println(arr);
+		System.out.println(arr.peekFirst());
+		System.out.println(arr.subList(0, 2));
 	}
 }

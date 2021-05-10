@@ -13,16 +13,16 @@ import java.util.Iterator;
  *
  * @param <E>
  */
-public class Bag<E> extends AbstractCollection<E> implements Serializable {
+public class ArrayBag<E> extends AbstractCollection<E> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final ArrayList<E> array;
 
-	public Bag() { array = new ArrayList<>(); }
+	public ArrayBag() { array = new ArrayList<>(); }
 
-	public Bag(int initSize) { array = new ArrayList<>(initSize); }
+	public ArrayBag(int initSize) { array = new ArrayList<>(initSize); }
 
-	public Bag(Collection<? extends E> c) { array = new ArrayList<>(c); }
+	public ArrayBag(Collection<? extends E> c) { array = new ArrayList<>(c); }
 
 	public E get(int i) { return array.get(i); }
 

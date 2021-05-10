@@ -291,7 +291,7 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 	@Override
 	public Iterator<DLLNode<E>> descendingIterator() {
 		return new Iterator<DLLNode<E>>() {
-			ListIterator<DLLNode<E>> itr = listIterator(tail.prev, size() - 1);
+			ListIterator<DLLNode<E>> itr = listIterator(tail, size());
 
 			public boolean hasNext() { return itr.hasPrevious(); }
 
@@ -303,22 +303,23 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 
 	@Override
 	// overriding because of optimization
-	public ListIterator<DLLNode<E>> listIterator() { return listIterator(head, 0); }
+	public ListIterator<DLLNode<E>> listIterator() { return listIterator(head.next, 0); }
 
 	@Override
-	public ListIterator<DLLNode<E>> listIterator(int index) { return listIterator(get(index).prev, index); }
+	public ListIterator<DLLNode<E>> listIterator(int index) { return listIterator(get(index), index); }
 
 	/**
-	 * @param node  node to start the iterator at, can be head but not tail (left bracket closed, right bracket open)
-	 * @param index index of first element to be returned from the list iterator (by a call to the next method). </br>
-	 *              0 <= index < size()
+	 * @param node  the first node to be returned from the list iterator by a call to the next(). </br>
+	 *              Can be tail but not head.
+	 * @param index index of first element to be returned from the list iterator by a call to the next(). </br>
+	 *              0 <= index <= size()
 	 * @return a list iterator over the elements in this list (in proper sequence)
 	 */
 	ListIterator<DLLNode<E>> listIterator(DLLNode<E> node, int index) {
 		return new ListIterator<DLLNode<E>>() {
 
 			int nextI = index;
-			DLLNode<E> curr = node;
+			DLLNode<E> curr = node.prev;
 			DLLNode<E> old = null;
 			boolean isForward;
 
