@@ -1,6 +1,7 @@
 package in.rslather.example;
 
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 
 import in.rslather.DoublyLinkedList;
@@ -75,9 +76,21 @@ public class LRUCache<K, V> {
 		System.out.println(obj.deList);
 		obj.get(5);
 		System.out.println(obj.deList);
-		
-		System.out.println(obj.deList.get(5));
-		
+
 		System.out.println("First item: " + obj.peek());
+
+		for (ListIterator<DLLNode<Pair<Integer, String>>> itr = obj.deList.listIterator(); itr.hasNext();) {
+			itr.next();
+			if (itr.nextIndex() == obj.deList.size()) {
+				itr.add(new DLLNode<>());
+				itr.add(new DLLNode<>());
+				System.out.println(itr.previousIndex() + " : " + itr.previous());
+				break;
+			}
+
+		}
+		System.out.println(obj.deList);
+
+		System.out.println(obj.deList.get(8));
 	}
 }

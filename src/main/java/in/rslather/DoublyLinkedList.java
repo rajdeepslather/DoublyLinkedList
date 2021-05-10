@@ -40,25 +40,20 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	 * 
 	 * @param node
 	 */
-	public void moveToFirst(DLLNode<A> node) {
-		removeNode(node);
-		addFirst(node);
-	}
+	public void moveToFirst(DLLNode<A> node) { addFirst(removeNode(node)); }
 
 	/**
 	 * Move node from anywhere in this object to the last position.
 	 * 
 	 * @param node
 	 */
-	public void moveToLast(DLLNode<A> node) {
-		removeNode(node);
-		addLast(node);
-	}
+	public void moveToLast(DLLNode<A> node) { addLast(removeNode(node)); }
 
 	/**
 	 * @param node node to be removed
+	 * @return removed node
 	 */
-	public void removeNode(DLLNode<A> node) {
+	public DLLNode<A> removeNode(DLLNode<A> node) {
 		DLLNode<A> prev = node.prev;
 		DLLNode<A> next = node.next;
 
@@ -66,18 +61,22 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 		next.prev = prev;
 
 		length--;
+		return node;
 	}
 
 	/**
 	 * @param oldNode node in the linked list to be replaced
 	 * @param newNode replacement node
+	 * @return oldNode
 	 */
-	public void replaceNode(DLLNode<A> oldNode, DLLNode<A> newNode) {
+	public DLLNode<A> replaceNode(DLLNode<A> oldNode, DLLNode<A> newNode) {
 		newNode.next = oldNode.next;
 		newNode.prev = oldNode.prev;
 
 		oldNode.prev.next = newNode;
 		oldNode.next.prev = newNode;
+
+		return oldNode;
 	}
 
 	/**
@@ -106,11 +105,6 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	 */
 	public void insertLeft(DLLNode<A> newNode, DLLNode<A> rightNode) { insertRight(rightNode.prev, newNode); }
 
-	protected void insertLeft(DLLNode<A> newNode, int index) {
-		DLLNode<A> rightNode = (index == size()) ? tail : get(index);
-		insertLeft(newNode, rightNode);
-	}
-
 	protected DLLNode<A> getForward(int index) {
 		int i = 0;
 		for (DLLNode<A> node : this)
@@ -123,6 +117,7 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 		int i = size() - 1;
 		for (Iterator<DLLNode<A>> revItr = descendingIterator(); revItr.hasNext();) {
 			DLLNode<A> node = revItr.next();
+			System.out.println(i);
 			if (index == i--)
 				return node;
 		}
@@ -148,8 +143,8 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	}
 
 	@Override
+	// overriding because of optimization
 	public void clear() {
-		// overriding because of optimization
 		head.next = tail;
 		tail.prev = head;
 		length = 0;
@@ -181,22 +176,18 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 
 	@Override
 	public DLLNode<A> pollFirst() {
-		if (size() <= 0)
+		if (isEmpty())
 			return null;
 
-		DLLNode<A> first = peekFirst();
-		removeNode(first);
-		return first;
+		return removeNode(peekFirst());
 	}
 
 	@Override
 	public DLLNode<A> pollLast() {
-		if (size() <= 0)
+		if (isEmpty())
 			return null;
 
-		DLLNode<A> last = peekLast();
-		removeNode(last);
-		return last;
+		return removeNode(peekLast());
 	}
 
 	@Override
@@ -218,7 +209,6 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 				removeNode(node);
 				return true;
 			}
-
 		return false;
 	}
 
@@ -226,8 +216,8 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	public boolean removeLastOccurrence(Object o) { return removeFirstOccurrence(o); }
 
 	@Override
+	// overriding because of optimization
 	public boolean add(DLLNode<A> node) {
-		// overriding because of optimization
 		addLast(node);
 		return true;
 	}
@@ -254,18 +244,16 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	public DLLNode<A> pop() { return removeFirst(); }
 
 	@Override
-	public boolean remove(Object o) {
-		// overriding because we need to use == to do equals check
-		return removeFirstOccurrence(o);
-	}
+	// overriding because we need to use == to do equals check
+	public boolean remove(Object o) { return removeFirstOccurrence(o); }
 
 	@Override
+	// overriding because we need to use == to do equals check
 	public boolean contains(Object o) {
-		// overriding because we need to use == to do equals check
-		for (DLLNode<A> node : this) {
+		for (DLLNode<A> node : this)
 			if (node == o)
 				return true;
-		}
+
 		return false;
 	}
 
@@ -273,8 +261,8 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	public int size() { return length; }
 
 	@Override
+	// overriding because of optimization
 	public DLLNode<A> get(int index) {
-		// overriding because of optimization
 		if (index < 0 || index >= size())
 			throw new IndexOutOfBoundsException();
 
@@ -285,146 +273,106 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	}
 
 	@Override
+	// overriding because of optimization
 	public DLLNode<A> set(int index, DLLNode<A> element) {
-		// overriding because of optimization
-		DLLNode<A> node = get(index);
-		replaceNode(node, element);
-
-		return node;
+		return replaceNode(get(index), element);
 	}
 
 	@Override
+	// overriding because of optimization
 	public void add(int index, DLLNode<A> newNode) {
-		// overriding because of optimization
-		insertLeft(newNode, index);
+		insertLeft(newNode, (index == size()) ? tail : get(index));
 	}
 
 	@Override
-	public DLLNode<A> remove(int index) {
-		DLLNode<A> node = (index == size()) ? tail : get(index);
-		removeNode(node);
-		return node;
-	}
+	public DLLNode<A> remove(int index) { return removeNode(get(index)); }
 
 	// iterators
 
 	@Override
-	public Iterator<DLLNode<A>> descendingIterator() { return descendingIterator(tail); }
-
-	public Iterator<DLLNode<A>> descendingIterator(DLLNode<A> node) {
+	public Iterator<DLLNode<A>> descendingIterator() {
 		return new Iterator<DLLNode<A>>() {
-			DLLNode<A> prev = node.prev;
-			DLLNode<A> old = node;
+			ListIterator<DLLNode<A>> itr = listIterator(tail.prev, size() - 1);
 
-			@Override
-			public boolean hasNext() { return prev != head; }
+			public boolean hasNext() { return itr.hasPrevious(); }
 
-			@Override
-			public DLLNode<A> next() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+			public DLLNode<A> next() { return itr.previous(); }
 
-				old = prev;
-				prev = prev.prev;
-				return old;
-			}
-
-			@Override
-			public void remove() {
-				if (old == null || old == tail)
-					throw new IllegalStateException();
-				removeNode(old);
-				old = null;
-			}
+			public void remove() { itr.remove(); }
 		};
 	}
 
 	@Override
-	public ListIterator<DLLNode<A>> listIterator() {
-		// overriding because of optimization
-		return listIterator(head, 0);
-	}
+	// overriding because of optimization
+	public ListIterator<DLLNode<A>> listIterator() { return listIterator(head, 0); }
 
 	@Override
 	public ListIterator<DLLNode<A>> listIterator(int index) { return listIterator(get(index).prev, index); }
 
+	/**
+	 * @param node  node to start the iterator at, can be head but not tail (left bracket closed, right bracket open)
+	 * @param index index of first element to be returned from the list iterator (by a call to the next method). </br>
+	 *              0 <= index < size()
+	 * @return a list iterator over the elements in this list (in proper sequence)
+	 */
 	ListIterator<DLLNode<A>> listIterator(DLLNode<A> node, int index) {
 		return new ListIterator<DLLNode<A>>() {
 
-			int nextI = index; // 0 <= i < size()
-			DLLNode<A> curr = node; // can be head or tail
+			int nextI = index;
+			DLLNode<A> curr = node;
 			DLLNode<A> old = null;
-			boolean isForward = true;
+			boolean isForward;
 
-			@Override
 			public boolean hasNext() { return nextI < size(); }
 
-			@Override
+			// returns the next node
 			public DLLNode<A> next() {
 				if (!hasNext())
 					throw new NoSuchElementException();
+				isForward = true;
 
 				nextI++;
 				curr = curr.next;
-				isForward = true;
-
 				old = curr;
-				return curr;
+				return old;
 			}
 
-			@Override
-			public boolean hasPrevious() { return nextI > 0; }
+			public boolean hasPrevious() { return previousIndex() >= 0; }
 
-			@Override
+			// returns the current node
 			public DLLNode<A> previous() {
 				if (!hasPrevious())
 					throw new NoSuchElementException();
+				isForward = false;
+				old = curr;
 
 				nextI--;
 				curr = curr.prev;
-				isForward = false;
-
-				old = curr;
-				return curr;
+				return old;
 			}
 
-			@Override
 			public int nextIndex() { return nextI; }
 
-			@Override
-			public int previousIndex() { return nextI - 1; }
+			public int previousIndex() { return nextI - 1; /* current index */ }
 
-			@Override
 			public void remove() {
-				if (old == null)
-					throw new IllegalStateException();
-
-				removeNode(old);
+				removeNode(ifNullExcept(old));
 				old = null;
-
 				if (isForward)
 					nextI--;
 			}
 
-			@Override
 			public void set(DLLNode<A> newNode) {
-				if (old == null)
-					throw new IllegalStateException();
-				replaceNode(old, newNode);
+				replaceNode(ifNullExcept(old), newNode);
 				old = newNode;
 			}
 
-			@Override
 			public void add(DLLNode<A> newNode) {
-				if (!hasNext()) {// i.e. this is the last node
-					insertLeft(newNode, tail);
-					curr = tail;
-					nextI = size();
-				} else {
-					insertLeft(newNode, curr);
-					nextI++;
-				}
+				insertRight(curr, newNode);
 				old = null;
+				// move cursor to newNode
+				curr = curr.next;
+				nextI++;
 			}
 		};
 	}
@@ -432,8 +380,8 @@ public class DoublyLinkedList<A> extends AbstractSequentialList<DLLNode<A>>
 	// Bulk methods
 
 	@Override
+	// overriding because of optimization
 	public boolean containsAll(Collection<?> c) {
-		// overriding because of optimization
 		if (c.size() <= 0)
 			return true;
 
