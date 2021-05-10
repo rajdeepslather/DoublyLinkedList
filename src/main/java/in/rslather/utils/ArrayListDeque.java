@@ -5,11 +5,8 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
-import java.util.NoSuchElementException;
 import java.util.RandomAccess;
 
 /**
@@ -22,7 +19,7 @@ import java.util.RandomAccess;
  * @author RAJDEEP
  */
 public class ArrayListDeque<E> extends AbstractList<E>
-		implements List<E>, Deque<E>, RandomAccess, Serializable {
+		implements DefaultDeque<E>, RandomAccess, Serializable {
 	private static final long serialVersionUID = 1L;
 	final ArrayList<E> array; // reversed from the Deque
 
@@ -48,12 +45,6 @@ public class ArrayListDeque<E> extends AbstractList<E>
 		this.array = array;
 	}
 
-	protected E ifNullExcept(E e) {
-		if (e == null)
-			throw new NoSuchElementException();
-		return e;
-	}
-
 	int lastI() { return array.size() - 1; }
 
 	int toArrayI(int i) { return array.size() - 1 - i; }
@@ -68,24 +59,6 @@ public class ArrayListDeque<E> extends AbstractList<E>
 	public void addLast(E e) { array.add(0, e); }
 
 	@Override
-	public boolean offerFirst(E e) {
-		addFirst(e);
-		return true;
-	}
-
-	@Override
-	public boolean offerLast(E e) {
-		addLast(e);
-		return true;
-	}
-
-	@Override
-	public E removeFirst() { return ifNullExcept(pollFirst()); }
-
-	@Override
-	public E removeLast() { return ifNullExcept(pollLast()); }
-
-	@Override
 	public E pollFirst() {
 		if (isEmpty())
 			return null;
@@ -98,12 +71,6 @@ public class ArrayListDeque<E> extends AbstractList<E>
 			return null;
 		return array.remove(0);
 	}
-
-	@Override
-	public E getFirst() { return ifNullExcept(peekFirst()); }
-
-	@Override
-	public E getLast() { return ifNullExcept(peekLast()); }
 
 	@Override
 	public E peekFirst() {
@@ -140,33 +107,6 @@ public class ArrayListDeque<E> extends AbstractList<E>
 
 	@Override
 	public boolean removeLastOccurrence(Object o) { return array.remove(o); }
-
-	@Override
-	public boolean add(E e) {
-		addLast(e);
-		return true;
-	}
-
-	@Override
-	public boolean offer(E e) { return offerLast(e); }
-
-	@Override
-	public E remove() { return removeFirst(); }
-
-	@Override
-	public E poll() { return pollFirst(); }
-
-	@Override
-	public E element() { return getFirst(); }
-
-	@Override
-	public E peek() { return peekFirst(); }
-
-	@Override
-	public void push(E e) { addFirst(e); }
-
-	@Override
-	public E pop() { return removeFirst(); }
 
 	@Override
 	public boolean remove(Object o) { return array.remove(o); }

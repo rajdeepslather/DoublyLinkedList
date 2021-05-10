@@ -3,12 +3,13 @@ package in.rslather;
 import java.io.Serializable;
 import java.util.AbstractSequentialList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import in.rslather.utils.DefaultDeque;
 
 /**
  * @param <E>
@@ -16,7 +17,7 @@ import java.util.Set;
  * @author RAJDEEP
  */
 public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
-		implements Deque<DLLNode<E>>, Serializable {
+		implements DefaultDeque<DLLNode<E>>, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final DLLNode<E> head = new DLLNode<>();
@@ -125,12 +126,6 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 		return null;
 	}
 
-	protected DLLNode<E> ifNullExcept(DLLNode<E> node) {
-		if (node == null)
-			throw new NoSuchElementException();
-		return node;
-	}
-
 	@Override
 	// overriding because of optimization
 	protected void removeRange(int fromIndex, int toIndex) {
@@ -158,24 +153,6 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 	public void addLast(DLLNode<E> node) { insertLeft(node, tail); }
 
 	@Override
-	public boolean offerFirst(DLLNode<E> node) {
-		addFirst(node);
-		return true;
-	}
-
-	@Override
-	public boolean offerLast(DLLNode<E> node) {
-		addLast(node);
-		return true;
-	}
-
-	@Override
-	public DLLNode<E> removeFirst() { return ifNullExcept(pollFirst()); }
-
-	@Override
-	public DLLNode<E> removeLast() { return ifNullExcept(pollLast()); }
-
-	@Override
 	public DLLNode<E> pollFirst() {
 		if (isEmpty())
 			return null;
@@ -188,12 +165,6 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 			return null;
 		return removeNode(peekLast());
 	}
-
-	@Override
-	public DLLNode<E> getFirst() { return ifNullExcept(peekFirst()); }
-
-	@Override
-	public DLLNode<E> getLast() { return ifNullExcept(peekLast()); }
 
 	@Override
 	public DLLNode<E> peekFirst() { return head.next; }
@@ -213,34 +184,6 @@ public class DoublyLinkedList<E> extends AbstractSequentialList<DLLNode<E>>
 
 	@Override
 	public boolean removeLastOccurrence(Object o) { return removeFirstOccurrence(o); }
-
-	@Override
-	// overriding because of optimization
-	public boolean add(DLLNode<E> node) {
-		addLast(node);
-		return true;
-	}
-
-	@Override
-	public boolean offer(DLLNode<E> node) { return offerLast(node); }
-
-	@Override
-	public DLLNode<E> remove() { return removeFirst(); }
-
-	@Override
-	public DLLNode<E> poll() { return pollFirst(); }
-
-	@Override
-	public DLLNode<E> element() { return getFirst(); }
-
-	@Override
-	public DLLNode<E> peek() { return peekFirst(); }
-
-	@Override
-	public void push(DLLNode<E> node) { addFirst(node); }
-
-	@Override
-	public DLLNode<E> pop() { return removeFirst(); }
 
 	@Override
 	// overriding because we need to use == to do equals check
